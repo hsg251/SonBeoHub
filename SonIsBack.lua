@@ -6,16 +6,16 @@ loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V
          Animation = "facebook: Thanh Sơn Lê:)"
          },
         Key = {
-        KeySystem = false,
+        KeySystem = true,
         Title = "Key System",
         Description = "",
-        KeyLink = "",
-        Keys = {"1234"},
+        KeyLink = "https://skibidi-toilet-1.gitbook.io/keysystem/",
+        Keys = {"hgfdsdfghbb87283743hnn48728488444"},
         Notifi = {
         Notifications = true,
-        CorrectKey = "Running the Script...",
-       Incorrectkey = "The key is incorrect",
-       CopyKeyLink = "Copied to Clipboard"
+        CorrectKey = "đang chạy script!",
+       Incorrectkey = "key sai!",
+       CopyKeyLink = "đã copy"
       }
     }
   })
@@ -30,7 +30,7 @@ loadstring(game:HttpGet(("https://raw.githubusercontent.com/daucobonhi/Ui-Redz-V
       })
       
 ------ Tab
-     local Tab1o = MakeTab({Name = "Giới Thiệu"})
+     local Tab1o = MakeTab({Name = "info của ad"})
      local Tab2o = MakeTab({Name = "SonBeo Hub"})
      local Tab3o = MakeTab({Name = "Script Khác"})
      
@@ -58,50 +58,43 @@ AddButton(Tab2o, {
 })
 
 AddButton(Tab3o, {
-    Name = "DatTHG"
+    Name = "DatTHG",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/LuaCrack/DatThg/refs/heads/main/DatThgV1"))()
     end
 })
 
 AddButton(Tab3o, {
-    Name = "W-azure"
+    Name = "W-azure",
     Callback = function()
-        getgenv().Team = "Pirates"
-        getgenv().AutoLoad = true --Will Load Script On Server Hop
-        getgenv().SlowLoadUi  = false
-        getgenv().ForceUseSilentAimDashModifier = false --Force turn on silent aim , if error then executor problem
-        getgenv().ForceUseWalkSpeedModifier = false --Force turn on Walk Speed Modifier , if error then executor problem
         loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/3b2169cf53bc6104dabe8e19562e5cc2.lua"))()
     end
 })
 
 AddButton(Tab3o, {
-    Name = "Annie Hub"
+    Name = "Annie Hub",
     Callback = function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/1st-Mars/Annie/main/1st.lua'))()
     end
 })
 
 AddButton(Tab3o, {
-    Name = "Tsuo Hub"
+    Name = "Tsuo Hub",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Tsuo7/TsuoHub/main/Tsuoscripts"))()
     end
 })
 
 AddButton(Tab3o, {
-    Name = "Banana Cat Hub(Fake)"
+    Name = "Banana Cat Hub(Fake)",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/kimprobloxdz/Banana-Free/refs/heads/main/Protected_5609200582002947.lua.txt"))()
     end
 })
 
 AddButton(Tab3o, {
-    Name = "Xero Hub"
+    Name = "Xero Hub",
     Callback = function()
-        getgenv().Team = "Pirates" -- Pirates/Marines
-        getgenv().Fix_Lag = true -- true/false
         loadstring(game:HttpGet("https://xerohub.click/script/main.lua"))()
     end
 })
