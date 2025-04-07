@@ -24,7 +24,7 @@
         alert("made by SonBeo Hub");
 
         // Mở tab mới
-        window.open("https://discord.gg/6gArN7re", "_blank");
+        window.open("https://discord.gg/WMxhMKH9", "_blank");
     }
 })();
 
