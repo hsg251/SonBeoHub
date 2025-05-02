@@ -10,22 +10,22 @@ local playerButtons = {}
 local espObjects = {}
 local originalSizes = {}
 
--- Giao diện
+-- GUI
 local Window = Rayfield:CreateWindow({
-   Name = "SonBeo Hub",
-   LoadingTitle = "SonBeo Hub",
-   LoadingSubtitle = "Đang tải...",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = nil,
-      FileName = "SonBeoHubConfig"
-   },
-   Discord = {
-      Enabled = false,
-      Invite = "",
-      RememberJoins = false
-   },
-   KeySystem = false,
+    Name = "SonBeo Hub",
+    LoadingTitle = "SonBeo Hub",
+    LoadingSubtitle = "Đang tải...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "SonBeoHubConfig"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "",
+        RememberJoins = false
+    },
+    KeySystem = false,
 })
 
 local MainTab = Window:CreateTab("Main", 4483362458)
@@ -34,9 +34,8 @@ local SettingsTab = Window:CreateTab("Settings", 4483362458)
 -- HITBOX
 local function setHitbox(state)
     for _, plr in pairs(Players:GetPlayers()) do
-        local char = plr.Character
-        if plr ~= LocalPlayer and char and char:FindFirstChild("HumanoidRootPart") then
-            local hrp = char.HumanoidRootPart
+        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local hrp = plr.Character.HumanoidRootPart
             if state then
                 if not originalSizes[plr] then originalSizes[plr] = hrp.Size end
                 hrp.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
@@ -68,53 +67,54 @@ MainTab:CreateToggle({
 local function toggleESP(state)
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            if state then
-                if not espObjects[player] and player.Character and player.Character:FindFirstChild("Head") then
-                    local billboard = Instance.new("BillboardGui")
-                    billboard.Name = "ESP"
-                    billboard.Adornee = player.Character.Head
-                    billboard.AlwaysOnTop = true
-                    billboard.Size = UDim2.new(0, 200, 0, 50)
-                    billboard.StudsOffset = Vector3.new(0, 2, 0)
-
-                    local nameLabel = Instance.new("TextLabel", billboard)
-                    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-                    nameLabel.Position = UDim2.new(0, 0, 0, 0)
-                    nameLabel.Text = player.Name
-                    nameLabel.BackgroundTransparency = 1
-                    nameLabel.TextColor3 = Color3.new(1, 0, 0)
-                    nameLabel.TextStrokeTransparency = 0.5
-                    nameLabel.TextScaled = true
-
-                    local hpLabel = Instance.new("TextLabel", billboard)
-                    hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
-                    hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
-                    hpLabel.BackgroundTransparency = 1
-                    hpLabel.TextColor3 = Color3.new(0, 1, 0)
-                    hpLabel.TextStrokeTransparency = 0.5
-                    hpLabel.TextScaled = true
-
-                    billboard.Parent = player.Character.Head
-                    espObjects[player] = {
-                        gui = billboard,
-                        hpLabel = hpLabel
-                    }
-
-                    task.spawn(function()
-                        while espEnabled and player.Parent and player.Character and player.Character:FindFirstChild("Humanoid") do
-                            local humanoid = player.Character:FindFirstChild("Humanoid")
-                            local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
-                            local hp = math.floor(humanoid.Health)
-                            espObjects[player].hpLabel.Text = "HP: " .. hp .. " | " .. dist .. "m"
-                            task.wait(0.2)
-                        end
-                    end)
-                end
-            else
-                if espObjects[player] then
+            -- Xoá GUI cũ nếu có
+            if espObjects[player] then
+                if espObjects[player].gui then
                     espObjects[player].gui:Destroy()
-                    espObjects[player] = nil
                 end
+                espObjects[player] = nil
+            end
+
+            if state and player.Character and player.Character:FindFirstChild("Head") then
+                local billboard = Instance.new("BillboardGui")
+                billboard.Name = "ESP"
+                billboard.Adornee = player.Character.Head
+                billboard.AlwaysOnTop = true
+                billboard.Size = UDim2.new(0, 200, 0, 50)
+                billboard.StudsOffset = Vector3.new(0, 2, 0)
+
+                local nameLabel = Instance.new("TextLabel", billboard)
+                nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                nameLabel.Position = UDim2.new(0, 0, 0, 0)
+                nameLabel.Text = player.Name
+                nameLabel.BackgroundTransparency = 1
+                nameLabel.TextColor3 = Color3.new(1, 0, 0)
+                nameLabel.TextStrokeTransparency = 0.5
+                nameLabel.TextScaled = true
+
+                local hpLabel = Instance.new("TextLabel", billboard)
+                hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
+                hpLabel.BackgroundTransparency = 1
+                hpLabel.TextColor3 = Color3.new(0, 1, 0)
+                hpLabel.TextStrokeTransparency = 0.5
+                hpLabel.TextScaled = true
+
+                billboard.Parent = player.Character.Head
+                espObjects[player] = {
+                    gui = billboard,
+                    hpLabel = hpLabel
+                }
+
+                task.spawn(function()
+                    while espEnabled and player.Character and player.Character:FindFirstChild("Humanoid") and espObjects[player] do
+                        local humanoid = player.Character:FindFirstChild("Humanoid")
+                        local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
+                        local hp = math.floor(humanoid.Health)
+                        espObjects[player].hpLabel.Text = "HP: " .. hp .. " | " .. dist .. "m"
+                        task.wait(0.2)
+                    end
+                end)
             end
         end
     end
@@ -174,17 +174,21 @@ SettingsTab:CreateSlider({
     end
 })
 
--- TỰ ĐỘNG KÍCH HOẠT LẠI KHI NHÂN VẬT HỒI SINH
-local function setupCharacterListeners(player)
+-- TỰ ĐỘNG BẬT LẠI HITBOX & ESP KHI HỒI SINH
+local function setupCharacterListener(player)
     player.CharacterAdded:Connect(function()
         task.wait(1)
-        if hitboxEnabled then setHitbox(true) end
-        if espEnabled then toggleESP(true) end
+        if hitboxEnabled then
+            setHitbox(true)
+        end
+        if espEnabled then
+            toggleESP(true)
+        end
     end)
 end
 
 for _, player in pairs(Players:GetPlayers()) do
-    setupCharacterListeners(player)
+    setupCharacterListener(player)
 end
 
-Players.PlayerAdded:Connect(setupCharacterListeners)
+Players.PlayerAdded:Connect(setupCharacterListener)
