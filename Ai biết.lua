@@ -1,25 +1,30 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
 local selectedPlayer = nil
-local hitboxSize = 20
+local hitboxSize = 10
 local hitboxEnabled = false
 local espEnabled = false
 local playerButtons = {}
+local espObjects = {}
 local originalSizes = {}
 
 -- Giao diện
 local Window = Rayfield:CreateWindow({
    Name = "SonBeo Hub",
-   LoadingTitle = "Đang khởi động SonBeo...",
-   LoadingSubtitle = "Hack có tâm, vui có tầm",
+   LoadingTitle = "SonBeo Hub",
+   LoadingSubtitle = "Đang tải...",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = nil,
       FileName = "SonBeoHubConfig"
    },
-   Discord = { Enabled = false },
+   Discord = {
+      Enabled = false,
+      Invite = "",
+      RememberJoins = false
+   },
    KeySystem = false,
 })
 
@@ -29,8 +34,9 @@ local SettingsTab = Window:CreateTab("Settings", 4483362458)
 -- HITBOX
 local function setHitbox(state)
     for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local hrp = plr.Character.HumanoidRootPart
+        local char = plr.Character
+        if plr ~= LocalPlayer and char and char:FindFirstChild("HumanoidRootPart") then
+            local hrp = char.HumanoidRootPart
             if state then
                 if not originalSizes[plr] then originalSizes[plr] = hrp.Size end
                 hrp.Size = Vector3.new(hitboxSize, hitboxSize, hitboxSize)
@@ -50,7 +56,7 @@ local function setHitbox(state)
 end
 
 MainTab:CreateToggle({
-    Name = "Mở Rộng Hitbox",
+    Name = "Bật/Tắt Hitbox",
     CurrentValue = false,
     Callback = function(Value)
         hitboxEnabled = Value
@@ -58,88 +64,68 @@ MainTab:CreateToggle({
     end
 })
 
--- ESP Box
-local drawings = {}
+-- ESP
+local function toggleESP(state)
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            if state then
+                if not espObjects[player] and player.Character and player.Character:FindFirstChild("Head") then
+                    local billboard = Instance.new("BillboardGui")
+                    billboard.Name = "ESP"
+                    billboard.Adornee = player.Character.Head
+                    billboard.AlwaysOnTop = true
+                    billboard.Size = UDim2.new(0, 200, 0, 50)
+                    billboard.StudsOffset = Vector3.new(0, 2, 0)
 
-function createESP(plr)
-    local box = Drawing.new("Square")
-    box.Thickness = 2
-    box.Color = Color3.new(0, 1, 0)
-    box.Filled = false
-    box.Visible = false
+                    local nameLabel = Instance.new("TextLabel", billboard)
+                    nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                    nameLabel.Position = UDim2.new(0, 0, 0, 0)
+                    nameLabel.Text = player.Name
+                    nameLabel.BackgroundTransparency = 1
+                    nameLabel.TextColor3 = Color3.new(1, 0, 0)
+                    nameLabel.TextStrokeTransparency = 0.5
+                    nameLabel.TextScaled = true
 
-    local name = Drawing.new("Text")
-    name.Color = Color3.new(1, 1, 1)
-    name.Size = 14
-    name.Center = true
-    name.Outline = true
-    name.Visible = false
+                    local hpLabel = Instance.new("TextLabel", billboard)
+                    hpLabel.Size = UDim2.new(1, 0, 0.5, 0)
+                    hpLabel.Position = UDim2.new(0, 0, 0.5, 0)
+                    hpLabel.BackgroundTransparency = 1
+                    hpLabel.TextColor3 = Color3.new(0, 1, 0)
+                    hpLabel.TextStrokeTransparency = 0.5
+                    hpLabel.TextScaled = true
 
-    local line = Drawing.new("Line")
-    line.Thickness = 1
-    line.Color = Color3.new(1, 1, 1)
-    line.Visible = false
+                    billboard.Parent = player.Character.Head
+                    espObjects[player] = {
+                        gui = billboard,
+                        hpLabel = hpLabel
+                    }
 
-    drawings[plr] = {Box = box, Name = name, Line = line}
-end
-
-function removeESP(plr)
-    if drawings[plr] then
-        for _, d in pairs(drawings[plr]) do d:Remove() end
-        drawings[plr] = nil
-    end
-end
-
-function updateESP()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Humanoid") then
-            if not drawings[plr] then createESP(plr) end
-            local char = plr.Character
-            local hrp = char.HumanoidRootPart
-            local hum = char.Humanoid
-            local pos, onscreen = Camera:WorldToViewportPoint(hrp.Position)
-            if onscreen and espEnabled then
-                local size = Vector3.new(2, 3, 1) * (Camera.CFrame.Position - hrp.Position).Magnitude / 50
-                local topLeft = Camera:WorldToViewportPoint(hrp.Position + Vector3.new(-size.X, size.Y, 0))
-                local bottomRight = Camera:WorldToViewportPoint(hrp.Position + Vector3.new(size.X, -size.Y, 0))
-
-                local box = drawings[plr].Box
-                box.Size = Vector2.new(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y)
-                box.Position = Vector2.new(topLeft.X, topLeft.Y)
-                box.Visible = true
-
-                local name = drawings[plr].Name
-                name.Text = plr.Name .. " | " .. math.floor((LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude) .. "m"
-                name.Position = Vector2.new((topLeft.X + bottomRight.X)/2, topLeft.Y - 15)
-                name.Visible = true
-
-                local line = drawings[plr].Line
-                line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                line.To = Vector2.new(pos.X, pos.Y)
-                line.Visible = true
+                    task.spawn(function()
+                        while espEnabled and player.Parent and player.Character and player.Character:FindFirstChild("Humanoid") do
+                            local humanoid = player.Character:FindFirstChild("Humanoid")
+                            local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
+                            local hp = math.floor(humanoid.Health)
+                            espObjects[player].hpLabel.Text = "HP: " .. hp .. " | " .. dist .. "m"
+                            task.wait(0.2)
+                        end
+                    end)
+                end
             else
-                if drawings[plr] then
-                    for _, d in pairs(drawings[plr]) do d.Visible = false end
+                if espObjects[player] then
+                    espObjects[player].gui:Destroy()
+                    espObjects[player] = nil
                 end
             end
-        else
-            removeESP(plr)
         end
     end
 end
 
-game:GetService("RunService").RenderStepped:Connect(updateESP)
-
 MainTab:CreateToggle({
-    Name = "ESP Box (Giống hình)",
+    Name = "ESP Player (Tên + Máu + Khoảng cách)",
     CurrentValue = false,
     Callback = function(Value)
         espEnabled = Value
-        if not Value then
-            for _, drawing in pairs(drawings) do
-                for _, d in pairs(drawing) do d.Visible = false end
-            end
-        end
+        toggleESP(Value)
     end
 })
 
@@ -173,12 +159,12 @@ MainTab:CreateButton({
     end
 })
 
--- SETTINGS
+-- CÀI ĐẶT HITBOX
 SettingsTab:CreateSlider({
     Name = "Kích thước Hitbox",
     Range = {1, 100},
     Increment = 1,
-    CurrentValue = 20,
+    CurrentValue = 10,
     Callback = function(Value)
         hitboxSize = Value
         if hitboxEnabled then
@@ -187,3 +173,18 @@ SettingsTab:CreateSlider({
         end
     end
 })
+
+-- TỰ ĐỘNG KÍCH HOẠT LẠI KHI NHÂN VẬT HỒI SINH
+local function setupCharacterListeners(player)
+    player.CharacterAdded:Connect(function()
+        task.wait(1)
+        if hitboxEnabled then setHitbox(true) end
+        if espEnabled then toggleESP(true) end
+    end)
+end
+
+for _, player in pairs(Players:GetPlayers()) do
+    setupCharacterListeners(player)
+end
+
+Players.PlayerAdded:Connect(setupCharacterListeners)
