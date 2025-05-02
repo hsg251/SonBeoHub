@@ -67,7 +67,6 @@ MainTab:CreateToggle({
 local function toggleESP(state)
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer then
-            -- Xoá GUI cũ nếu có
             if espObjects[player] then
                 if espObjects[player].gui then
                     espObjects[player].gui:Destroy()
@@ -107,9 +106,13 @@ local function toggleESP(state)
                 }
 
                 task.spawn(function()
-                    while espEnabled and player.Character and player.Character:FindFirstChild("Humanoid") and espObjects[player] do
+                    while espEnabled and player.Parent and player.Character and player.Character:FindFirstChild("Humanoid") do
+                        if not espObjects[player] then break end
                         local humanoid = player.Character:FindFirstChild("Humanoid")
-                        local dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
+                        local dist = 0
+                        pcall(function()
+                            dist = math.floor((LocalPlayer.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude)
+                        end)
                         local hp = math.floor(humanoid.Health)
                         espObjects[player].hpLabel.Text = "HP: " .. hp .. " | " .. dist .. "m"
                         task.wait(0.2)
@@ -159,7 +162,7 @@ MainTab:CreateButton({
     end
 })
 
--- CÀI ĐẶT HITBOX
+-- SLIDER HITBOX
 SettingsTab:CreateSlider({
     Name = "Kích thước Hitbox",
     Range = {1, 100},
@@ -174,7 +177,7 @@ SettingsTab:CreateSlider({
     end
 })
 
--- TỰ ĐỘNG BẬT LẠI HITBOX & ESP KHI HỒI SINH
+-- TỰ ĐỘNG BẬT LẠI SAU MỖI LẦN RESPAWN
 local function setupCharacterListener(player)
     player.CharacterAdded:Connect(function()
         task.wait(1)
