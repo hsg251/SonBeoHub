@@ -1,11 +1,11 @@
 --// Load Rayfield
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
---// Khởi tạo UI
+--// Khởi tạo ui
 local Window = Rayfield:CreateWindow({
    Name = "SonBeo Hub | Blade Ball",
-   LoadingTitle = "loading....",
-   LoadingSubtitle = "Script by SonBeo",
+   LoadingTitle = "Đang tải tool gánh team...",
+   LoadingSubtitle = "Script by Sơn Bé",
    ConfigurationSaving = {
       Enabled = false
    },
@@ -15,8 +15,9 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false
 })
 
+
 --// TAB MAIN
-local MainTab = Window:CreateTab("Main", 4483362458)
+local MainTab = Window:CreateTab("Main")
 
 local autoParryEnabled = false
 local parryConnection = nil
@@ -159,7 +160,7 @@ MainTab:CreateButton({
 ---------------------
 -- TAB ABOUT UI --
 ---------------------
-local AboutTab = Window:CreateTab("About", 4483362458)
+local AboutTab = Window:CreateTab("About")
 
 AboutTab:CreateButton({
     Name = "My Facebook Account",
