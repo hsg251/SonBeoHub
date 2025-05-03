@@ -18,11 +18,13 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false,
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458)
-local AboutTab = Window:CreateTab("About", 4483362458)
-local PlayerTab = Window:CreateTab("Player", 4483362458)
+local MainTab = Window:CreateTab("💩 Main", nil)
+local AboutTab = Window:CreateTab("🙆‍♂️ About", nil)
+local PlayerTab = Window:CreateTab("🐒 Player", nil)
 
 -- Tab About
+AboutTab:CreateSection("About me:D")
+
 AboutTab:CreateButton({
     Name = "My Facebook Account",
     Callback = function()
@@ -36,6 +38,8 @@ AboutTab:CreateButton({
 })
 
 -- Nút Spam F
+MainTab:CreateSection("Main")
+
 MainTab:CreateButton({
     Name = "Auto Spam",
     Callback = function()
@@ -62,6 +66,8 @@ MainTab:CreateButton({
 })
 
 -- WalkSpeed Slider
+PlayerTab:CreateSection("Player")
+
 PlayerTab:CreateSlider({
     Name = "Walk Speed",
     Range = {16, 100},
