@@ -1,7 +1,7 @@
---// Load Rayfield
+-- Load Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
---// Khởi tạo ui
+-- Khởi tạo UI
 local Window = Rayfield:CreateWindow({
    Name = "SonBeo Hub | Blade Ball",
    LoadingTitle = "Đang tải tool gánh team...",
@@ -15,9 +15,7 @@ local Window = Rayfield:CreateWindow({
    KeySystem = false
 })
 
----------------------
--- TAB ABOUT UI --
----------------------
+-- TAB ABOUT UI
 local AboutTab = Window:CreateTab("About")
 
 AboutTab:CreateButton({
@@ -32,7 +30,7 @@ AboutTab:CreateButton({
     end
 })
 
---// TAB MAIN
+-- TAB MAIN
 local MainTab = Window:CreateTab("Main")
 
 local autoParryEnabled = false
@@ -50,6 +48,7 @@ MainTab:CreateToggle({
            local RunService = game:GetService("RunService")
            local Players = game:GetService("Players")
            local VirtualInputManager = game:GetService("VirtualInputManager")
+           local UserInputService = game:GetService("UserInputService")
            local Player = Players.LocalPlayer
            local Cooldown = tick()
            local Parried = false
@@ -86,11 +85,14 @@ MainTab:CreateToggle({
                local HRP = Character:FindFirstChild("HumanoidRootPart")
                if not HRP then return end
 
-               local Speed = Ball.zoomies.VectorVelocity.Magnitude
+               local zoomies = Ball:FindFirstChild("zoomies")
+               local Speed = zoomies and zoomies:FindFirstChild("VectorVelocity") and zoomies.VectorVelocity.Magnitude or 0
                local Distance = (HRP.Position - Ball.Position).Magnitude
 
-               if Ball:GetAttribute("target") == Player.Name and not Parried and Distance / Speed <= 0.65 then
-                   VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+               if Ball:GetAttribute("target") == Player.Name and not Parried and Speed > 0 and Distance / Speed <= 0.65 then
+                   -- Gửi sự kiện click chuột trái (nhấn + thả)
+                   VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, nil, 0)
+                   VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, nil, 0)
                    Parried = true
                    Cooldown = tick()
                    task.delay(1, function()
@@ -99,11 +101,8 @@ MainTab:CreateToggle({
                end
            end)
        else
-           if parryConnection then parryConnection:Disconnect() end
-           if parryBallConnection then parryBallConnection:Disconnect() end
+           if parryConnection then parryConnection:Disconnect(); parryConnection = nil end
+           if parryBallConnection then parryBallConnection:Disconnect(); parryBallConnection = nil end
        end
    end
 })
-
-
-
