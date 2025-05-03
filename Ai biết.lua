@@ -28,8 +28,8 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false,
 })
 
-local MainTab = Window:CreateTab("Main", 4483362458)
-local SettingsTab = Window:CreateTab("Settings", 4483362458)
+local MainTab = Window:CreateTab("👙 Main", nil)
+local SettingsTab = Window:CreateTab("⚠️ Settings", nil)
 
 -- HITBOX
 local function setHitbox(state)
@@ -53,6 +53,8 @@ local function setHitbox(state)
         end
     end
 end
+
+MainTab:CreateSection("Main")
 
 MainTab:CreateToggle({
     Name = "Bật/Tắt Hitbox",
