@@ -1,11 +1,10 @@
--- Load Rayfield UI (Miiws compatible)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Tạo cửa sổ UI
+-- UI Setup
 local Window = Rayfield:CreateWindow({
     Name = "SonBeo Hub",
     LoadingTitle = "SonBeo Hub",
-    LoadingSubtitle = "Đang tải...",
+    LoadingSubtitle = "by SonBeo",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = nil,
@@ -19,107 +18,73 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false,
 })
 
--- Tạo tab
-local AboutTab = Window:CreateTab("About", 4483362458)
 local MainTab = Window:CreateTab("Main", 4483362458)
+local AboutTab = Window:CreateTab("About", 4483362458)
+local PlayerTab = Window:CreateTab("Player", 4483362458)
 
+-- Tab About
 AboutTab:CreateButton({
     Name = "My Facebook Account",
     Callback = function()
         setclipboard("https://www.facebook.com/share/16KNnFeoYK/")
         Rayfield:Notify({
-            Title = "Đã sao chép!",
-            Content = "Link Facebook đã copy vào clipboard!",
+            Title = "SonBeo Hub",
+            Content = "coppied to clipboard",
             Duration = 5
         })
     end
 })
 
--- Nút bấm để chạy mã spam từ GitHub
+-- Nút Spam F
 MainTab:CreateButton({
-    Name = "Mở Spam F",
+    Name = "Auto Spam",
     Callback = function()
         Rayfield:Notify({
-            Title = "Đang tải Spam F...",
-            Content = "Chờ xíu để bắn F như điên...",
+            Title = "SonBeo Hub",
+            Content = "If someone dribbles the ball to you bounce it.",
             Duration = 4
         })
-        
-        -- Tải script spam từ GitHub của bạn
         loadstring(game:HttpGet("https://raw.githubusercontent.com/hsg251/SonBeoHub/refs/heads/main/SpamButton.lua"))()
     end
 })
 
-local autoParryEnabled = false
-local parryConnection = nil
-local parryBallConnection = nil
+-- Nút Auto Parry (dùng loadstring)
+MainTab:CreateButton({
+    Name = "Auto Parry",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Auto Parry Activated!",
+            Content = "Proximity parry đã bật!",
+            Duration = 5
+        })
+        loadstring(game:HttpGet("https://rawscripts.net/raw/XMAS-Blade-Ball-OPEN-SOURCE-Simple-Proximity-Auto-Parry-25405"))()
+    end
+})
 
-MainTab:CreateToggle({
-   Name = "Auto Parry",
-   CurrentValue = false,
-   Flag = "AutoParry",
-   Callback = function(Value)
-       autoParryEnabled = Value
+-- WalkSpeed Slider
+PlayerTab:CreateSlider({
+    Name = "Walk Speed",
+    Range = {16, 100},
+    Increment = 1,
+    CurrentValue = 16,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.WalkSpeed = Value
+        end
+    end
+})
 
-       if Value then
-           local RunService = game:GetService("RunService")
-           local Players = game:GetService("Players")
-           local VirtualInputManager = game:GetService("VirtualInputManager")
-           local UserInputService = game:GetService("UserInputService")
-           local Player = Players.LocalPlayer
-           local Cooldown = tick()
-           local Parried = false
-
-           local function GetBall()
-               for _, Ball in ipairs(workspace.Balls:GetChildren()) do
-                   if Ball:GetAttribute("realBall") then
-                       return Ball
-                   end
-               end
-           end
-
-           local function ResetConnection()
-               if parryBallConnection then
-                   parryBallConnection:Disconnect()
-                   parryBallConnection = nil
-               end
-           end
-
-           workspace.Balls.ChildAdded:Connect(function()
-               local Ball = GetBall()
-               if not Ball then return end
-               ResetConnection()
-               parryBallConnection = Ball:GetAttributeChangedSignal("target"):Connect(function()
-                   Parried = false
-               end)
-           end)
-
-           parryConnection = RunService.PreSimulation:Connect(function()
-               if not autoParryEnabled then return end
-               local Ball = GetBall()
-               local Character = Player.Character
-               if not Ball or not Character then return end
-               local HRP = Character:FindFirstChild("HumanoidRootPart")
-               if not HRP then return end
-
-               local zoomies = Ball:FindFirstChild("zoomies")
-               local Speed = zoomies and zoomies:FindFirstChild("VectorVelocity") and zoomies.VectorVelocity.Magnitude or 0
-               local Distance = (HRP.Position - Ball.Position).Magnitude
-
-               if Ball:GetAttribute("target") == Player.Name and not Parried and Speed > 0 and Distance / Speed <= 0.65 then
-                   -- Gửi sự kiện click chuột trái (nhấn + thả)
-                   VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, nil, 0)
-                   VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, nil, 0)
-                   Parried = true
-                   Cooldown = tick()
-                   task.delay(1, function()
-                       Parried = false
-                   end)
-               end
-           end)
-       else
-           if parryConnection then parryConnection:Disconnect(); parryConnection = nil end
-           if parryBallConnection then parryBallConnection:Disconnect(); parryBallConnection = nil end
-       end
-   end
+-- JumpPower Slider
+PlayerTab:CreateSlider({
+    Name = "Jump Power",
+    Range = {50, 200},
+    Increment = 5,
+    CurrentValue = 50,
+    Callback = function(Value)
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            player.Character.Humanoid.JumpPower = Value
+        end
+    end
 })
