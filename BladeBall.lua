@@ -1,22 +1,27 @@
--- Load Rayfield UI
+-- Load Rayfield UI (Miiws compatible)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Khởi tạo UI
+-- Tạo cửa sổ UI
 local Window = Rayfield:CreateWindow({
-   Name = "SonBeo Hub | Blade Ball",
-   LoadingTitle = "Đang tải tool gánh team...",
-   LoadingSubtitle = "Script by Sơn Bé",
-   ConfigurationSaving = {
-      Enabled = false
-   },
-   Discord = {
-      Enabled = false
-   },
-   KeySystem = false
+    Name = "SonBeo Hub",
+    LoadingTitle = "SonBeo Hub",
+    LoadingSubtitle = "Đang tải...",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "SonBeoHubConfig"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "",
+        RememberJoins = false
+    },
+    KeySystem = false,
 })
 
--- TAB ABOUT UI
-local AboutTab = Window:CreateTab("About")
+-- Tạo tab
+local AboutTab = Window:CreateTab("About", 4483362458)
+local MainTab = Window:CreateTab("Main", 4483362458)
 
 AboutTab:CreateButton({
     Name = "My Facebook Account",
@@ -30,8 +35,20 @@ AboutTab:CreateButton({
     end
 })
 
--- TAB MAIN
-local MainTab = Window:CreateTab("Main")
+-- Nút bấm để chạy mã spam từ GitHub
+MainTab:CreateButton({
+    Name = "Mở Spam F",
+    Callback = function()
+        Rayfield:Notify({
+            Title = "Đang tải Spam F...",
+            Content = "Chờ xíu để bắn F như điên...",
+            Duration = 4
+        })
+        
+        -- Tải script spam từ GitHub của bạn
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/hsg251/SonBeoHub/refs/heads/main/SpamButton.lua"))()
+    end
+})
 
 local autoParryEnabled = false
 local parryConnection = nil
