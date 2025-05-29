@@ -1,96 +1,140 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+--// Rayfield UI Loader
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
 
--- UI Setup
 local Window = Rayfield:CreateWindow({
-    Name = "SonBeo Hub",
-    LoadingTitle = "SonBeo Hub",
-    LoadingSubtitle = "by SonBeo",
+    Name = "Ultimate Dodgeball Script",
+    LoadingTitle = "Auto Parry System",
+    LoadingSubtitle = "by Sơn Đẹp Trai =))",
     ConfigurationSaving = {
         Enabled = true,
-        FolderName = nil,
-        FileName = "SonBeoHubConfig"
+        FolderName = "DodgeballScript",
+        FileName = "Settings"
     },
     Discord = {
-        Enabled = false,
-        Invite = "",
-        RememberJoins = false
+        Enabled = false
     },
     KeySystem = false,
 })
 
-local MainTab = Window:CreateTab("💩 Main", nil)
-local AboutTab = Window:CreateTab("🙆‍♂️ About", nil)
-local PlayerTab = Window:CreateTab("🐒 Player", nil)
+--// Biến toàn cục
+local AutoParryEnabled = false
+local AutoSpamFEnabled = false
+local isSpamming = false
+local ReactionTime = 0.2 -- giây
+local LastParryTime = 0
 
--- Tab About
-AboutTab:CreateSection("About me:D")
-
-AboutTab:CreateButton({
-    Name = "My Facebook Account",
-    Callback = function()
-        setclipboard("https://www.facebook.com/share/16KNnFeoYK/")
-        Rayfield:Notify({
-            Title = "SonBeo Hub",
-            Content = "coppied to clipboard",
-            Duration = 5
-        })
+--// Hàm Parry
+function TryParry()
+    local now = tick()
+    if now - LastParryTime >= ReactionTime then
+        LastParryTime = now
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+        task.wait(0.05)
+        vim:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+        print("🛡️ Auto Parry activated!")
     end
-})
+end
 
--- Nút Spam F
-MainTab:CreateSection("Main")
+--// Hàm Spam F
+function pressF()
+    local vim = game:GetService("VirtualInputManager")
+    vim:SendKeyEvent(true, Enum.KeyCode.F, false, game)
+    task.wait(0.05)
+    vim:SendKeyEvent(false, Enum.KeyCode.F, false, game)
+end
 
-MainTab:CreateButton({
-    Name = "Auto Spam",
-    Callback = function()
-        Rayfield:Notify({
-            Title = "SonBeo Hub",
-            Content = "If someone dribbles the ball to you bounce it.",
-            Duration = 4
-        })
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/hsg251/SonBeoHub/refs/heads/main/SpamButton.lua"))()
+--// Giả lập phát hiện bóng đến gần
+function BallIsTooFast()
+    -- Đây là hàm demo! Trong thực tế bạn cần thay bằng hàm thật để xác định ball đang đến và quá nhanh.
+    -- Cho ví dụ random 10% sẽ bị fail
+    return math.random(1, 100) <= 10
+end
+
+--// Auto Parry chạy liên tục
+task.spawn(function()
+    while task.wait(0.01) do
+        if AutoParryEnabled then
+            if not BallIsTooFast() then
+                TryParry()
+            end
+        end
     end
-})
+end)
 
--- Nút Auto Parry (dùng loadstring)
-MainTab:CreateButton({
+--// Auto Spam F nếu parry fail
+task.spawn(function()
+    while task.wait(0.1) do
+        if AutoSpamFEnabled and AutoParryEnabled then
+            if BallIsTooFast() then
+                if not isSpamming then
+                    isSpamming = true
+                    print("⚠️ Ball quá nhanh! Bắt đầu spam F!")
+                    task.spawn(function()
+                        while isSpamming and AutoSpamFEnabled do
+                            pressF()
+                            task.wait(0.1)
+                        end
+                    end)
+                end
+            else
+                if isSpamming then
+                    isSpamming = false
+                    print("✅ Ball bình thường. Ngừng spam F.")
+                end
+            end
+        else
+            isSpamming = false
+        end
+    end
+end)
+
+--// Tab Main
+local MainTab = Window:CreateTab("Main", 4483362458)
+
+MainTab:CreateToggle({
     Name = "Auto Parry",
-    Callback = function()
-        Rayfield:Notify({
-            Title = "Auto Parry Activated!",
-            Content = "Proximity parry đã bật!",
-            Duration = 5
-        })
-        loadstring(game:HttpGet("https://rawscripts.net/raw/XMAS-Blade-Ball-OPEN-SOURCE-Simple-Proximity-Auto-Parry-25405"))()
-    end
+    CurrentValue = false,
+    Callback = function(Value)
+        AutoParryEnabled = Value
+        print("Auto Parry: " .. tostring(Value))
+    end,
 })
 
--- WalkSpeed Slider
-PlayerTab:CreateSection("Player")
-
-PlayerTab:CreateSlider({
-    Name = "Walk Speed",
-    Range = {16, 100},
-    Increment = 1,
-    CurrentValue = 16,
+MainTab:CreateToggle({
+    Name = "Auto Spam F khi quá nhanh",
+    CurrentValue = false,
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = Value
-        end
-    end
+        AutoSpamFEnabled = Value
+        print("Auto Spam F: " .. tostring(Value))
+    end,
 })
 
--- JumpPower Slider
-PlayerTab:CreateSlider({
-    Name = "Jump Power",
-    Range = {50, 200},
-    Increment = 5,
-    CurrentValue = 50,
+--// Tab Setting
+local SettingTab = Window:CreateTab("Setting", 4483362458)
+
+SettingTab:CreateSlider({
+    Name = "Thời gian phản ứng (s)",
+    Range = {0.05, 0.5},
+    Increment = 0.01,
+    Suffix = "giây",
+    CurrentValue = ReactionTime,
     Callback = function(Value)
-        local player = game.Players.LocalPlayer
-        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.JumpPower = Value
-        end
-    end
+        ReactionTime = Value
+        print("Đặt lại thời gian phản ứng: " .. Value)
+    end,
+})
+
+--// UI Ready
+Rayfield:Notify({
+    Title = "✅ Script Đã Bật",
+    Content = "Chơi vui nhé ông thần =))",
+    Duration = 5,
+    Image = nil,
+    Actions = {
+        Ignore = {
+            Name = "Ok",
+            Callback = function() end
+        },
+    },
 })
