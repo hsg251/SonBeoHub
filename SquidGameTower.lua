@@ -22,7 +22,7 @@ local localPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
-local PLACE_ID = 75139493550474
+local PLACE_ID = game.PlaceId
 
 -- Lưu cấu hình
 local SavedSpeed = 16
@@ -49,7 +49,7 @@ localPlayer.CharacterAdded:Connect(function(char)
 	end
 end)
 
------------------------------ About Tab
+-- About Tab
 local AboutTab = Window:CreateTab("about", 4483362458)
 AboutTab:CreateButton({
    Name = "facebook",
@@ -58,36 +58,54 @@ AboutTab:CreateButton({
    end,
 })
 
------------------------------ Main Tab
+-- Main Tab
 local MainTab = Window:CreateTab("main", 4483362458)
 
 -- Slap all (except self)
 local slapActive = false
+local function getOtherPlayers()
+	local others = {}
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= localPlayer and player.Character then
+			table.insert(others, player)
+		end
+	end
+	return others
+end
+
 MainTab:CreateToggle({
-	Name = "Slap all (except yourself)",
+	Name = "Slap all (except self)",
 	CurrentValue = false,
 	Callback = function(Value)
 		slapActive = Value
-		task.spawn(function()
-			while slapActive do
-				for _, p in pairs(Players:GetPlayers()) do
-					if p ~= localPlayer and p.Character then
-						local tool = localPlayer:FindFirstChild("Backpack"):FindFirstChild("Slap")
-						if tool and tool:FindFirstChild("Event") then
-							tool.Event:FireServer("slash", p.Character, Vector3.new(-5.8, 0, -1.3))
+		if slapActive then
+			task.spawn(function()
+				while slapActive do
+					local others = getOtherPlayers()
+					local tool = localPlayer:FindFirstChild("Backpack") and localPlayer.Backpack:FindFirstChild("Slap")
+					if tool and tool:FindFirstChild("Event") then
+						for _, player in pairs(others) do
+							local args = {
+								"slash",
+								player.Character,
+								Vector3.new(-5.848731994628906, 0, -1.338780164718628)
+							}
+							pcall(function()
+								tool.Event:FireServer(unpack(args))
+							end)
 						end
 					end
+					task.wait()
 				end
-				task.wait()
-			end
-		end)
-	end,
+			end)
+		end
+	end
 })
 
 -- Slap all (including yourself)
 local slapAllActive = false
 MainTab:CreateToggle({
-	Name = "Slap all (including yourself)",
+	Name = "Slap all (including yourself) [FAST]",
 	CurrentValue = false,
 	Callback = function(Value)
 		slapAllActive = Value
@@ -96,7 +114,7 @@ MainTab:CreateToggle({
 				local tool = localPlayer:FindFirstChild("Backpack") and localPlayer.Backpack:FindFirstChild("Slap")
 				if tool and tool:FindFirstChild("Event") then
 					for _, p in pairs(Players:GetPlayers()) do
-						if p.Character then
+						if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
 							pcall(function()
 								tool.Event:FireServer("slash", p.Character, Vector3.new(5.385, -0.0000001711, 2.646))
 							end)
@@ -113,12 +131,14 @@ MainTab:CreateToggle({
 MainTab:CreateButton({
 	Name = "Teleport to Win",
 	Callback = function()
-		local hrp = localPlayer.Character:WaitForChild("HumanoidRootPart")
-		hrp.CFrame = CFrame.new(Vector3.new(1.38, 484.94, 249.62))
+		local hrp = localPlayer.Character and localPlayer.Character:WaitForChild("HumanoidRootPart")
+		if hrp then
+			hrp.CFrame = CFrame.new(Vector3.new(1.38, 484.94, 249.62))
+		end
 	end,
 })
 
------------------------------ Player Tab
+-- Player Tab
 local PlayerTab = Window:CreateTab("player", 4483362458)
 
 PlayerTab:CreateSlider({
@@ -166,7 +186,7 @@ PlayerTab:CreateToggle({
 	end,
 })
 
------------------------------ Sever Tab
+-- Server Tab
 local SeverTab = Window:CreateTab("sever", 4483362458)
 
 -- Rejoin
@@ -201,7 +221,7 @@ SeverTab:CreateButton({
 	end,
 })
 
--- Notify loading complete
+-- Notify
 wait(1.5)
 Rayfield:Notify({
 	Title = "SonBeo Hub",
