@@ -1,3 +1,4 @@
+-- Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
@@ -24,13 +25,11 @@ local TeleportService = game:GetService("TeleportService")
 local UserInputService = game:GetService("UserInputService")
 local PLACE_ID = game.PlaceId
 
--- Lưu cấu hình
 local SavedSpeed = 16
 local SavedJumpPower = 10
 local InfiniteJumpEnabled = false
 local infJumpConnection = nil
 
--- Gán lại sau khi reset
 localPlayer.CharacterAdded:Connect(function(char)
 	task.wait(0.5)
 	local hum = char:FindFirstChildOfClass("Humanoid")
@@ -61,7 +60,6 @@ AboutTab:CreateButton({
 -- Main Tab
 local MainTab = Window:CreateTab("main", 4483362458)
 
--- Slap all (except self)
 local slapActive = false
 local function getOtherPlayers()
 	local others = {}
@@ -85,11 +83,7 @@ MainTab:CreateToggle({
 					local tool = localPlayer:FindFirstChild("Backpack") and localPlayer.Backpack:FindFirstChild("Slap")
 					if tool and tool:FindFirstChild("Event") then
 						for _, player in pairs(others) do
-							local args = {
-								"slash",
-								player.Character,
-								Vector3.new(-5.848731994628906, 0, -1.338780164718628)
-							}
+							local args = {"slash", player.Character, Vector3.new(5.385, -0.0000001711, 2.646)}
 							pcall(function()
 								tool.Event:FireServer(unpack(args))
 							end)
@@ -102,10 +96,9 @@ MainTab:CreateToggle({
 	end
 })
 
--- Slap all (including yourself)
 local slapAllActive = false
 MainTab:CreateToggle({
-	Name = "Slap all (including yourself) [FAST]",
+	Name = "Slap all (including yourself)",
 	CurrentValue = false,
 	Callback = function(Value)
 		slapAllActive = Value
@@ -121,13 +114,12 @@ MainTab:CreateToggle({
 						end
 					end
 				end
-				task.wait()
-			end
-		end)
+			task.wait()
+		end
+	end)
 	end,
 })
 
--- Teleport to win
 MainTab:CreateButton({
 	Name = "Teleport to Win",
 	Callback = function()
@@ -189,7 +181,6 @@ PlayerTab:CreateToggle({
 -- Server Tab
 local SeverTab = Window:CreateTab("sever", 4483362458)
 
--- Rejoin
 SeverTab:CreateButton({
 	Name = "Rejoin",
 	Callback = function()
@@ -197,7 +188,6 @@ SeverTab:CreateButton({
 	end,
 })
 
--- Server Hop
 SeverTab:CreateButton({
 	Name = "Hop Server",
 	Callback = function()
@@ -221,11 +211,70 @@ SeverTab:CreateButton({
 	end,
 })
 
--- Notify
-wait(1.5)
 Rayfield:Notify({
-	Title = "SonBeo Hub",
-	Content = "Loading complete",
-	Duration = 5,
-	Image = "rbxassetid://4483362458",
+   Title = "Sonbeo Hub",
+   Content = "loading complete",
+   Duration = 5,
+   Image = "rewind",
 })
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local VirtualInput = game:GetService("VirtualInputManager")
+
+local player = Players.LocalPlayer
+local mouse = player:GetMouse()
+
+-- Tạo GUI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+gui.Name = "DraggableIconGui"
+gui.ResetOnSpawn = false
+
+-- Tạo icon kéo thả được
+local icon = Instance.new("ImageButton")
+icon.Name = "KButton"
+icon.Parent = gui
+icon.Size = UDim2.new(0, 60, 0, 60)
+icon.Position = UDim2.new(0, 100, 0, 100)
+icon.Image = "rbxthumb://type=Asset&id=133778471627727&w=150&h=150"
+icon.BackgroundTransparency = 1
+
+-- Kéo thả
+local dragging = false
+local dragInput, dragStart, startPos
+
+icon.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = icon.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+icon.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		icon.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+-- Bấm 1 lần thì nhấn phím K
+icon.MouseButton1Click:Connect(function()
+	VirtualInput:SendKeyEvent(true, Enum.KeyCode.K, false, game)
+	wait(0.05)
+	VirtualInput:SendKeyEvent(false, Enum.KeyCode.K, false, game)
+end)
