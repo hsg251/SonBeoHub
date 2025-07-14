@@ -78,7 +78,7 @@ MainTab:CreateToggle({
 						end
 					end
 				end
-				task.wait(0.25)
+				task.wait()
 			end
 		end)
 	end,
@@ -103,7 +103,7 @@ MainTab:CreateToggle({
 						end
 					end
 				end
-				task.wait(0.5)
+				task.wait()
 			end
 		end)
 	end,
@@ -202,7 +202,7 @@ SeverTab:CreateButton({
 })
 
 -- Notify loading complete
-task.wait(1.5)
+wait(1.5)
 Rayfield:Notify({
 	Title = "SonBeo Hub",
 	Content = "Loading complete",
