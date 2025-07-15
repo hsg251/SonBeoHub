@@ -1,3 +1,5 @@
+
+
 -- Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
@@ -50,6 +52,7 @@ end)
 
 -- About Tab
 local AboutTab = Window:CreateTab("about", 4483362458)
+local aboutsection = AboutTab:CreateSection("about")
 AboutTab:CreateButton({
    Name = "facebook",
    Callback = function()
@@ -59,6 +62,7 @@ AboutTab:CreateButton({
 
 -- Main Tab
 local MainTab = Window:CreateTab("main", 4483362458)
+local mainsection = MainTab:CreateSection("main")
 
 local slapActive = false
 local function getOtherPlayers()
@@ -120,6 +124,44 @@ MainTab:CreateToggle({
 	end,
 })
 
+local skibidisection = MainTab:CreateSection("slap player")
+local chosenPlayerName = "" -- lưu tên người chơi nhập vào
+
+MainTab:CreateInput({
+	Name = "Player Name to Slap",
+	PlaceholderText = "enter player name",
+	RemoveTextAfterFocusLost = false,
+	Callback = function(text)
+		chosenPlayerName = text
+	end,
+})
+
+local slapChosenActive = false
+
+MainTab:CreateToggle({
+	Name = "Slap player chosen",
+	CurrentValue = false,
+	Callback = function(Value)
+		slapChosenActive = Value
+		if Value then
+			task.spawn(function()
+				while slapChosenActive do
+					local tool = localPlayer:FindFirstChild("Backpack") and localPlayer.Backpack:FindFirstChild("Slap")
+					local target = Players:FindFirstChild(chosenPlayerName)
+
+					if tool and tool:FindFirstChild("Event") and target and target.Character then
+						pcall(function()
+							tool.Event:FireServer("slash", target.Character, Vector3.new(5.385, -0.0000001711, 2.646))
+						end)
+					end
+					task.wait()
+				end
+			end)
+		end
+	end,
+})
+
+local toiletsection = MainTab:CreateSection("win")
 MainTab:CreateButton({
 	Name = "Teleport to Win",
 	Callback = function()
@@ -132,6 +174,7 @@ MainTab:CreateButton({
 
 -- Player Tab
 local PlayerTab = Window:CreateTab("player", 4483362458)
+local player = PlayerTab:CreateSection("player")
 
 PlayerTab:CreateSlider({
 	Name = "Speed Walk",
@@ -147,7 +190,7 @@ PlayerTab:CreateSlider({
 
 PlayerTab:CreateSlider({
 	Name = "Power Jump",
-	Range = {10, 200},
+	Range = {50, 200},
 	Increment = 1,
 	CurrentValue = 10,
 	Callback = function(Value)
@@ -180,6 +223,7 @@ PlayerTab:CreateToggle({
 
 -- Server Tab
 local SeverTab = Window:CreateTab("sever", 4483362458)
+local sever = SeverTab:CreateSection("sever")
 
 SeverTab:CreateButton({
 	Name = "Rejoin",
@@ -217,6 +261,8 @@ Rayfield:Notify({
    Duration = 5,
    Image = "rewind",
 })
+
+-- icon
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local VirtualInput = game:GetService("VirtualInputManager")
