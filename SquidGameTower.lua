@@ -54,14 +54,22 @@ localPlayer.CharacterAdded:Connect(function(char)
 end)
 
 -- About Tab
-local AboutTab = Window:CreateTab("about", 4483362458)
-local aboutsection = AboutTab:CreateSection("about")
+local AboutTab = Window:CreateTab("About", 4483362458)
+local AboutSection = AboutTab:CreateSection("Developer Info")
+
 AboutTab:CreateButton({
-   Name = "facebook",
+   Name = "Facebook Profile",
    Callback = function()
       setclipboard("https://www.facebook.com/son.thanh.le.794756/")
+      Rayfield:Notify({
+         Title = "SonBeo Hub",
+         Content = "Facebook link copied to clipboard!",
+         Duration = 6.5,
+         Image = 4483362458,
+      })
    end,
 })
+
 
 -- Main Tab
 local MainTab = Window:CreateTab("main", 4483362458)
@@ -195,7 +203,7 @@ PlayerTab:CreateSlider({
 	Name = "Power Jump",
 	Range = {50, 200},
 	Increment = 1,
-	CurrentValue = 10,
+	CurrentValue = 50,
 	Callback = function(Value)
 		SavedJumpPower = Value
 		local hum = localPlayer.Character and localPlayer.Character:FindFirstChildOfClass("Humanoid")
