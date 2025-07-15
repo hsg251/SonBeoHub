@@ -2,7 +2,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "SonBeo Hub - squid game tower",
+   Name = "SonBeo Hub - squid game troll tower",
    LoadingTitle = "SonBeo Hub",
    LoadingSubtitle = "by thanh_dan999",
    ConfigurationSaving = {
