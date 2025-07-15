@@ -1,4 +1,7 @@
+print("hi! welcome to my script")
+print("loading...")
 
+wait("2")
 
 -- Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -262,29 +265,52 @@ Rayfield:Notify({
    Image = "rewind",
 })
 
--- icon
+--icon
 local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local VirtualInput = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
-local mouse = player:GetMouse()
 
 -- Tạo GUI
-local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+local gui = Instance.new("ScreenGui")
 gui.Name = "DraggableIconGui"
 gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- Tạo icon kéo thả được
 local icon = Instance.new("ImageButton")
 icon.Name = "KButton"
-icon.Parent = gui
 icon.Size = UDim2.new(0, 60, 0, 60)
 icon.Position = UDim2.new(0, 100, 0, 100)
 icon.Image = "rbxthumb://type=Asset&id=133778471627727&w=150&h=150"
 icon.BackgroundTransparency = 1
+icon.ClipsDescendants = true
+icon.Parent = gui
 
--- Kéo thả
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(1, 0)
+uicorner.Parent = icon
+
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(255, 0, 0)
+stroke.Transparency = 0
+stroke.LineJoinMode = Enum.LineJoinMode.Round
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = icon
+
+task.spawn(function()
+	while true do
+		local tween1 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0.3})
+		local tween2 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0})
+		tween1:Play()
+		tween1.Completed:Wait()
+		tween2:Play()
+		tween2.Completed:Wait()
+	end
+end)
+
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -318,7 +344,14 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
--- Bấm 1 lần thì nhấn phím K
+icon.MouseButton1Down:Connect(function()
+	icon:TweenSize(UDim2.new(0, 55, 0, 55), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+end)
+
+icon.MouseButton1Up:Connect(function()
+	icon:TweenSize(UDim2.new(0, 60, 0, 60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+end)
+
 icon.MouseButton1Click:Connect(function()
 	VirtualInput:SendKeyEvent(true, Enum.KeyCode.K, false, game)
 	wait(0.05)
