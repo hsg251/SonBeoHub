@@ -1,7 +1,7 @@
 print("hi! welcome to my script")
 print("loading...")
 
-wait("2")
+wait(2)
 
 -- Rayfield UI
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
@@ -231,6 +231,93 @@ PlayerTab:CreateToggle({
 		end
 	end,
 })
+
+local antisun = PlayerTab:CreateSection("ragdoll")
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local AntiRagdollConnections = {}
+local AntiRagdollEnabled = false
+
+-- Hàm xử lý ragdoll
+local function setupCharacter(character)
+    if not AntiRagdollEnabled then return end
+
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.Sit = false
+
+    local function handleBadState(newState)
+        if newState == Enum.HumanoidStateType.Ragdoll or 
+           newState == Enum.HumanoidStateType.FallingDown or 
+           newState == Enum.HumanoidStateType.PlatformStanding or
+           newState == Enum.HumanoidStateType.Seated then
+            humanoid.Sit = false
+            humanoid.PlatformStand = false
+            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+            if character:FindFirstChild("HumanoidRootPart") then
+                character.HumanoidRootPart.Anchored = false
+            end
+            return true
+        end
+        return false
+    end
+
+    handleBadState(humanoid:GetState())
+
+    table.insert(AntiRagdollConnections, humanoid.StateChanged:Connect(function(_, newState)
+        handleBadState(newState)
+    end))
+
+    for _, seat in pairs(workspace:GetDescendants()) do
+        if seat:IsA("Seat") then
+            table.insert(AntiRagdollConnections, seat:GetPropertyChangedSignal("Occupant"):Connect(function()
+                if seat.Occupant == humanoid then
+                    task.wait(0.1)
+                    humanoid.Sit = false
+                    humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+                end
+            end))
+        end
+    end
+
+    table.insert(AntiRagdollConnections, humanoid.Died:Connect(function()
+        for _, conn in ipairs(AntiRagdollConnections) do
+            conn:Disconnect()
+        end
+        table.clear(AntiRagdollConnections)
+    end))
+end
+
+-- Gắn vào sự kiện toggle
+local sun = PlayerTab:CreateToggle({
+   Name = "Anti Ragdoll",
+   CurrentValue = false,
+   Callback = function(Value)
+      AntiRagdollEnabled = Value
+
+      -- Dọn sạch kết nối cũ nếu tắt
+      for _, conn in ipairs(AntiRagdollConnections) do
+         conn:Disconnect()
+      end
+      table.clear(AntiRagdollConnections)
+
+      if Value then
+         if player.Character then
+            setupCharacter(player.Character)
+         end
+      end
+   end,
+})
+
+-- Tự động gọi lại khi nhân vật respawn
+player.CharacterAdded:Connect(function(char)
+    if AntiRagdollEnabled then
+        task.wait(0.1)
+        setupCharacter(char)
+    end
+end)
+
 
 -- Server Tab
 local SeverTab = Window:CreateTab("sever", 4483362458)
