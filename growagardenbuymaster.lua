@@ -34,8 +34,8 @@ AboutTab:CreateButton({
 })
 
 -- Main Tab
-local MainTab = Window:CreateTab("main", 4483362458)
-local mainsection = MainTab:CreateSection("main")
+local GearTab = Window:CreateTab("Gear", 4483362458)
+local gearsection = GearTab:CreateSection("gear")
 
 local autoBuyWateringCan = false
 
@@ -135,6 +135,150 @@ task.spawn(function()
 		wait(1)
 	end
 end)
+
+-------------------------------------------------------------------- Pet Tab
+local PetTab = Window:CreateTab("main", 4483362458)
+local petsection = PetTab:CreateSection("Pet")
+
+local autoBuyCommonEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Common Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyCommonEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyCommonEgg then
+			local args = {
+				[1] = "Common Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
+
+local autoBuyCommonEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Common Summer Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyCommonEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyCommonEgg then
+			local args = {
+				[1] = "Common Summer Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
+local autoBuyRareSummerEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Rare Summer Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyRareSummerEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyRareSummerEgg then
+			local args = {
+				[1] = "Rare Summer Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
+local autoBuyMythicalEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Mythical Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyMythicalEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyMythicalEgg then
+			local args = {
+				[1] = "Mythical Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
+local autoBuyParadiseEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Paradise Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyParadiseEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyParadiseEgg then
+			local args = {
+				[1] = "Paradise Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
+local autoBuyBugEgg = false
+
+MainTab:CreateToggle({ 
+	Name = "Auto buy Bug Egg", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyBugEgg = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyBugEgg then
+			local args = {
+				[1] = "Bug Egg"
+			}
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyPetEgg"):FireServer(unpack(args))
+		end
+		wait(1)
+	end
+end)
+
 
 -------------------------------------------------------------------- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
