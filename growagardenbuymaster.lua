@@ -39,7 +39,7 @@ local gearsection = GearTab:CreateSection("gear")
 
 local autoBuyWateringCan = false
 
-MainTab:CreateToggle({ 
+GearTab:CreateToggle({ 
 	Name = "Auto buy Watering Can", 
 	CurrentValue = false,
 
@@ -60,7 +60,7 @@ end)
 
 local autoBuyBasic = false
 
-MainTab:CreateToggle({ 
+GearTab:CreateToggle({ 
 	Name = "Auto buy Basic Sprinkler", 
 	CurrentValue = false,
 	Callback = function(Value)
@@ -80,7 +80,7 @@ end)
 
 local autoBuyAdvanced = false
 
-MainTab:CreateToggle({ 
+GearTab:CreateToggle({ 
 	Name = "Auto buy Advanced Sprinkler", 
 	CurrentValue = false,
 	Callback = function(Value)
@@ -100,7 +100,7 @@ end)
 
 local autoBuyGodly = false
 
-MainTab:CreateToggle({ 
+GearTab:CreateToggle({ 
 	Name = "Auto buy Godly Sprinkler", 
 	CurrentValue = false,
 	Callback = function(Value)
@@ -119,7 +119,7 @@ end)
 
 local autoBuyMaster = false
 
-MainTab:CreateToggle({ 
+GearTab:CreateToggle({ 
 	Name = "Auto buy Master Sprinkler", 
 	CurrentValue = false,
 	Callback = function(Value)
