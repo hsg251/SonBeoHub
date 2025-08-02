@@ -123,7 +123,7 @@ task.spawn(function()
 end)
 
 -- Pet Tab (Main)
-local PetTab = Window:CreateTab("main", 4483362458)
+local PetTab = Window:CreateTab("Pet", 4483362458)
 PetTab:CreateSection("Pet")
 
 local autoBuyCommonEgg = false
