@@ -1,6 +1,6 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Window = Rayfield:CreateWindow({
-   Name = "SonBeo Hub - squid game troll tower",
+   Name = "SonBeo Hub - grow a garden",
    LoadingTitle = "SonBeo Hub",
    LoadingSubtitle = "by thanh_dan999",
    ConfigurationSaving = {
@@ -148,7 +148,7 @@ local antiAFKEnabled = false
 -- Tạo toggle Anti AFK
 MiscTab:CreateToggle({ 
 	Name = "Anti AFK", 
-	CurrentValue = false, 
+	CurrentValue = true, 
 	Callback = function(Value)
 		antiAFKEnabled = Value
 	end,
@@ -165,4 +165,104 @@ task.spawn(function()
 		end
 		wait(600) -- 600 giây = 10 phút
 	end
+end)
+
+Rayfield:Notify({
+   Title = "Sonbeo Hub",
+   Content = "loading complete",
+   Duration = 5,
+   Image = "rewind",
+})
+
+--icon
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local VirtualInput = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+
+-- Tạo GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "DraggableIconGui"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local icon = Instance.new("ImageButton")
+icon.Name = "KButton"
+icon.Size = UDim2.new(0, 60, 0, 60)
+icon.Position = UDim2.new(0, 100, 0, 100)
+icon.Image = "rbxthumb://type=Asset&id=133778471627727&w=150&h=150"
+icon.BackgroundTransparency = 1
+icon.ClipsDescendants = true
+icon.Parent = gui
+
+local uicorner = Instance.new("UICorner")
+uicorner.CornerRadius = UDim.new(1, 0)
+uicorner.Parent = icon
+
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(255, 0, 0)
+stroke.Transparency = 0
+stroke.LineJoinMode = Enum.LineJoinMode.Round
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = icon
+
+task.spawn(function()
+	while true do
+		local tween1 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0.3})
+		local tween2 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0})
+		tween1:Play()
+		tween1.Completed:Wait()
+		tween2:Play()
+		tween2.Completed:Wait()
+	end
+end)
+
+local dragging = false
+local dragInput, dragStart, startPos
+
+icon.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = icon.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+icon.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+UIS.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		icon.Position = UDim2.new(
+			startPos.X.Scale, startPos.X.Offset + delta.X,
+			startPos.Y.Scale, startPos.Y.Offset + delta.Y
+		)
+	end
+end)
+
+icon.MouseButton1Down:Connect(function()
+	icon:TweenSize(UDim2.new(0, 55, 0, 55), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+end)
+
+icon.MouseButton1Up:Connect(function()
+	icon:TweenSize(UDim2.new(0, 60, 0, 60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+end)
+
+icon.MouseButton1Click:Connect(function()
+	VirtualInput:SendKeyEvent(true, Enum.KeyCode.K, false, game)
+	wait(0.05)
+	VirtualInput:SendKeyEvent(false, Enum.KeyCode.K, false, game)
 end)
