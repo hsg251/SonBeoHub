@@ -249,6 +249,8 @@ task.spawn(function()
       wait(1)
    end
 end)
+---------------------------------------- event tab
+
 
 -- Misc Tab
 local MiscTab = Window:CreateTab("Misc", 4483362458)
