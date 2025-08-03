@@ -250,6 +250,48 @@ task.spawn(function()
    end
 end)
 ---------------------------------------- event tab
+local EventTab = Window:CreateTab("Event", 4483362458)
+MiscTab:CreateSection("Event")
+
+EventTab:CreateButton({
+   Name = "Submit Fruit",
+   Callback = function()
+      local args = {
+         "SubmitHeldPlant"
+      }
+      game:GetService("ReplicatedStorage")
+         :WaitForChild("GameEvents")
+         :WaitForChild("CookingPotService_RE")
+         :FireServer(unpack(args))
+   end,
+})
+
+EventTab:CreateButton({
+   Name = "Cook",
+   Callback = function()
+      local args = {
+         "CookBest"
+      }
+      game:GetService("ReplicatedStorage")
+         :WaitForChild("GameEvents")
+         :WaitForChild("CookingPotService_RE")
+         :FireServer(unpack(args))
+   end,
+})
+
+EventTab:CreateButton({
+   Name = "Skip cook time (39 robux)",
+   Callback = function()
+      local args = {
+         "SkipCooking"
+      }
+      game:GetService("ReplicatedStorage")
+         :WaitForChild("GameEvents")
+         :WaitForChild("CookingPotService_RE")
+         :FireServer(unpack(args))
+   end,
+})
+
 
 
 -- Misc Tab
