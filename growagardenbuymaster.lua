@@ -1,3 +1,9 @@
+print("welcome to my script! :3")
+print("pls wait until game is loaded all...")
+wait(1)
+repeat wait() until game:IsLoaded()
+print("game is loaded all! loading script")
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
