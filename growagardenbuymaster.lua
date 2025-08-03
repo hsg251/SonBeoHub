@@ -251,7 +251,7 @@ task.spawn(function()
 end)
 ---------------------------------------- event tab
 local EventTab = Window:CreateTab("Event", 4483362458)
-MiscTab:CreateSection("Event")
+EventTab:CreateSection("Event")
 
 EventTab:CreateButton({
    Name = "Submit Fruit",
@@ -428,4 +428,3 @@ icon.MouseButton1Click:Connect(function()
 	wait(0.05)
 	VirtualInput:SendKeyEvent(false, Enum.KeyCode.K, false, game)
 end)
-
