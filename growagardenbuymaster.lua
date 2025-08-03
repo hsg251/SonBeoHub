@@ -1,4 +1,5 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
 local Window = Rayfield:CreateWindow({
    Name = "SonBeo Hub - grow a garden",
    LoadingTitle = "SonBeo Hub",
@@ -122,7 +123,28 @@ task.spawn(function()
    end
 end)
 
--- Pet Tab (Main)
+local autoBuyGrandmaster = false
+
+GearTab:CreateToggle({
+	Name = "Auto buy Grandmaster Sprinkler", 
+	CurrentValue = false,
+
+	Callback = function(Value)
+		autoBuyGrandmaster = Value
+	end,
+})
+
+task.spawn(function()
+	while true do
+		if autoBuyGrandmaster then
+			game:GetService("ReplicatedStorage"):WaitForChild("GameEvents"):WaitForChild("BuyGearStock"):FireServer("Grandmaster Sprinkler")
+		end
+		wait(1)
+	end
+end)
+
+
+-- Pet Tab
 local PetTab = Window:CreateTab("Pet", 4483362458)
 PetTab:CreateSection("Pet")
 
@@ -267,6 +289,7 @@ local Players = game:GetService("Players")
 local UIS = game:GetService("UserInputService")
 local VirtualInput = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 
@@ -291,23 +314,28 @@ uicorner.Parent = icon
 
 local stroke = Instance.new("UIStroke")
 stroke.Thickness = 3
-stroke.Color = Color3.fromRGB(255, 0, 0)
 stroke.Transparency = 0
 stroke.LineJoinMode = Enum.LineJoinMode.Round
 stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 stroke.Parent = icon
 
+-- Hàm chuyển HSV thành RGB
+local function HSVtoRGB(h)
+	local r, g, b = Color3.fromHSV(h, 1, 1):ToRGB()
+	return Color3.new(r, g, b)
+end
+
+-- Cầu vồng chạy vòng vòng
 task.spawn(function()
+	local hue = 0
 	while true do
-		local tween1 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0.3})
-		local tween2 = TweenService:Create(stroke, TweenInfo.new(0.5), {Transparency = 0})
-		tween1:Play()
-		tween1.Completed:Wait()
-		tween2:Play()
-		tween2.Completed:Wait()
+		hue = (hue + 0.01) % 1
+		stroke.Color = HSVtoRGB(hue)
+		wait(0.03)
 	end
 end)
 
+-- Kéo thả
 local dragging = false
 local dragInput, dragStart, startPos
 
@@ -341,6 +369,7 @@ UIS.InputChanged:Connect(function(input)
 	end
 end)
 
+-- Click effect
 icon.MouseButton1Down:Connect(function()
 	icon:TweenSize(UDim2.new(0, 55, 0, 55), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
 end)
@@ -349,8 +378,10 @@ icon.MouseButton1Up:Connect(function()
 	icon:TweenSize(UDim2.new(0, 60, 0, 60), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
 end)
 
+-- Bấm gửi phím K
 icon.MouseButton1Click:Connect(function()
 	VirtualInput:SendKeyEvent(true, Enum.KeyCode.K, false, game)
 	wait(0.05)
 	VirtualInput:SendKeyEvent(false, Enum.KeyCode.K, false, game)
 end)
+
